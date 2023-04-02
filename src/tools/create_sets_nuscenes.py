@@ -23,9 +23,10 @@ def generate(data_dir, val_size, output_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', type=str, default='data/lyft', help='Data path to iterate')
-    parser.add_argument('--val_size', type=float, default=0.1, help='Validation size')
-    parser.add_argument('--output_path', type=str, default='data', help='Output directory')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_path', type=str, default='/root/autodl-tmp/RTM3D/kitti_format/data/nuscenes_kitti/image', help='Data path to iterate')
+    parser.add_argument('--val_size', type=float, default=0.03, help='Validation size')
+    parser.add_argument('--output_path', type=str, default='/root/autodl-tmp/RTM3D/kitti_format/data/nuscenes_kitti', help='Output directory')
     args = parser.parse_args()
 
     generate(args.data_path, args.val_size, args.output_path)
