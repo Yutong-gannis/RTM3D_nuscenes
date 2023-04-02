@@ -1,5 +1,5 @@
 """
-Script for convert Lyft (KITTI format) to COCO format
+Script for convert nuScenes (KITTI format) to COCO format
 """
 
 from __future__ import absolute_import, annotations
@@ -18,22 +18,21 @@ import cv2
 from tqdm import tqdm
 
 from utils.ddd_utils import compute_box_3d, project_to_image
-from lyft_dataset_sdk.lyftdataset import LyftDataset 
+from lyft_dataset_sdk.lyftdataset import LyftDataset
 
 
-class Lyft2COCO:
-    def __init__(self, data_path, output_dir, lyft_path) -> None:
+class nuScenes2COCO:
+    def __init__(self, data_path, output_dir, nuscenes_path) -> None:
         # directory
         self.data_path = data_path
         self.output_dir = output_dir
-        self.lyft_path = lyft_path
-        self.json_path = os.path.join(self.lyft_path, 'v1.0-trainval')
+        self.nuscenes_path = nuscenes_path
+        self.json_path = os.path.join(self.nuScenes_path, 'v1.0-trainval')
 
         if not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir)
 
-        # lyftdataset
-        self.lyft = LyftDataset(data_path=self.lyft_path, json_path=self.json_path)
+        self.nuscenes = LyftDataset(data_path=self.nuscenes_path, json_path=self.json_path)
 
         # category (9 items)
         self.categories = ['car', 'truck', 'bus', 'trailer', 'construction_vehicle', 'pedestrian', 'motorcycle', 'bicycle',
@@ -50,7 +49,7 @@ class Lyft2COCO:
         for i, cat in enumerate(self.det_cats):
             self.cat_info.append({'name': cat, 'id': i+1})
 
-    def lyft_to_coco(self, img_shape=[900, 1600, 3]):
+    def nuscenes_to_coco(self, img_shape=[900, 1600, 3]):
         # loop to splits
         self.ann_dir = os.path.join(self.data_path, 'label/')
         self.calib_dir = os.path.join(self.data_path, 'calib/')
@@ -78,16 +77,14 @@ class Lyft2COCO:
                 # TODO: convert image name to line 
 
                 # image filename
-                # sd_record_cam = self.lyft.get("sample_data", line)
-                # filename = sd_record_cam['filename']
-                filename = os.path.join(self.lyft_path, 'image', line) + '.png'
+                filename = os.path.join(self.nuscenes_path, 'image', line) + '.png'
 
                 # read calibration file
                 calib_path = self.calib_dir + f'{line}.txt'
                 self.calib = self.read_calib(calib_path)
 
                 self.image_info = {
-                    'file_name': f'{filename}', # lyft in jpeg
+                    'file_name': f'{filename}', # nuscenes in jpeg
                     'id': self.image_id,
                     'calib': self.calib.tolist()
                     }
@@ -173,8 +170,8 @@ def main():
     parser.add_argument('--image_shape', type=int, nargs='+', default=[900, 1600, 3], help='Image shape [h, w, c]')
     args = parser.parse_args()
 
-    converter = Lyft2COCO(data_path=args.data_path, output_dir=args.output_path, lyft_path=args.lyft_path)
-    converter.lyft_to_coco(img_shape=args.image_shape)
+    converter = nuScenes2COCO(data_path=args.data_path, output_dir=args.output_path, nuscenes_path=args.nuscenes_path)
+    converter.nuscenes_to_coco(img_shape=args.image_shape)
 
 if __name__ == '__main__':
     main()
