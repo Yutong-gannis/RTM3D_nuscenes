@@ -27,7 +27,7 @@ class Lyft2COCO:
         self.data_path = data_path
         self.output_dir = output_dir
         self.lyft_path = lyft_path
-        self.json_path = os.path.join(self.lyft_path, 'train_data')
+        self.json_path = os.path.join(self.lyft_path, 'v1.0-trainval')
 
         if not os.path.isdir(self.output_dir):
             os.makedirs(self.output_dir)
@@ -36,20 +36,21 @@ class Lyft2COCO:
         self.lyft = LyftDataset(data_path=self.lyft_path, json_path=self.json_path)
 
         # category (9 items)
-        self.categories = ['car', 'pedestrian', 'animal', 'other_vehicle', 'bus',
-        'motorcycle', 'truck', 'emergency_vehicle', 'bicycle']
+        self.categories = ['car', 'truck', 'bus', 'trailer', 'construction_vehicle', 'pedestrian', 'motorcycle', 'bicycle',
+            'traffic_cone', 'barrier']
 
         # detection categories (6 items)
-        self.det_cats = ['car', 'pedestrian', 'animal']
+        self.det_cats = ['car', 'truck', 'bus', 'trailer', 'construction_vehicle', 'pedestrian', 'motorcycle', 'bicycle',
+            'traffic_cone', 'barrier']
 
         self.cat_ids = {cat: i + 1 for i, cat in enumerate(self.categories)}
-        self.det_ids = [1, 2, 3]
+        self.det_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
         self.cat_info = []
         for i, cat in enumerate(self.det_cats):
             self.cat_info.append({'name': cat, 'id': i+1})
 
-    def lyft_to_coco(self, img_shape=[1080, 1920, 3]):
+    def lyft_to_coco(self, img_shape=[900, 1600, 3]):
         # loop to splits
         self.ann_dir = os.path.join(self.data_path, 'label/')
         self.calib_dir = os.path.join(self.data_path, 'calib/')
@@ -77,8 +78,9 @@ class Lyft2COCO:
                 # TODO: convert image name to line 
 
                 # image filename
-                sd_record_cam = self.lyft.get("sample_data", line)
-                filename = sd_record_cam['filename']
+                # sd_record_cam = self.lyft.get("sample_data", line)
+                # filename = sd_record_cam['filename']
+                filename = os.path.join(self.lyft_path, 'image', line) + '.png'
 
                 # read calibration file
                 calib_path = self.calib_dir + f'{line}.txt'
@@ -164,15 +166,16 @@ class Lyft2COCO:
                 (bbox[2] - bbox[0]), (bbox[3] - bbox[1])]
 
 def main():
-    parser = argparse.ArgumentParser(description='Lyft to COCO')
-    parser.add_argument('--data_path', type=str, default='data/lyft/', help='Lyft data path')
-    parser.add_argument('--lyft_path', type=str, default='data/lyft/', help='Lyft data path')
-    parser.add_argument('--output_path', type=str, default='data/lyft/annotations', help='JSON output path')
-    parser.add_argument('--image_shape', type=int, nargs='+', default=[1024, 1224, 3], help='Image shape [h, w, c]')
+    parser = argparse.ArgumentParser(description='KITTI to COCO')
+    parser.add_argument('--data_path', type=str, default='/root/autodl-tmp/RTM3D/kitti_format/data/nuscenes_kitti/', help='nuScenes data path')
+    parser.add_argument('--nuscenes_path', type=str, default='/root/autodl-tmp/RTM3D/kitti_format/data/nuscenes/', help='nuScenes data path')
+    parser.add_argument('--output_path', type=str, default='/root/autodl-tmp/RTM3D/kitti_format/data/nuscenes_kitti/annotations/', help='JSON output path')
+    parser.add_argument('--image_shape', type=int, nargs='+', default=[900, 1600, 3], help='Image shape [h, w, c]')
     args = parser.parse_args()
 
     converter = Lyft2COCO(data_path=args.data_path, output_dir=args.output_path, lyft_path=args.lyft_path)
     converter.lyft_to_coco(img_shape=args.image_shape)
 
 if __name__ == '__main__':
+    main()
     main()
