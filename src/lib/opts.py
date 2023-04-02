@@ -35,7 +35,7 @@ class opts(object):
     self.parser.add_argument('--vis', action='store_true')
     self.parser.add_argument('--logger_save', type=int, default=0,
                              help='help')
-    self.parser.add_argument('--dataset', default='kitti',
+    self.parser.add_argument('--dataset', default='nuscenes',
                              help='dataset'
                                   '1.kitti'
                                   '2.nuscenes')
@@ -70,7 +70,7 @@ class opts(object):
                              choices=['white', 'black'])
     
     # model
-    self.parser.add_argument('--arch', default='dla_34', 
+    self.parser.add_argument('--arch', default='res_18', 
                              help='model architecture. Currently tested'
                                   'res_18 | res_101 | resdcn_18 | resdcn_101 |'
                                   'dlav0_34 | dla_34 | hourglass')
