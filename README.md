@@ -73,30 +73,19 @@ Then you can run docker container in interactive mode with:
 
 ## Dataset Preparation
 
-### Convert Lyft to KITTI
+### Convert nuScenes to KITTI
 ```
-python src/tools/export_kitti.py \
-    --lyft_dir data/lyft \
-    --json_dir data/lyft/train_data \
-    --get_all_detections False \
-    --num_workers 2 \
-    --samples_count 5 \
-    --store_dir data/lyft_kitti
+python src/tools/export_nuscenes.py
 ```
 
 ### Generate Image List
 ```
-python src/tools/create_sets_lyft.py \
-    --data_path data/lyft_mini/label_2 \
-    --val_size 0.1 \
-    --output_path data
+python src/tools/create_sets_nuscenes.py
 ```
 
-### Convert Lyft to COCO
+### Convert nuScenes to COCO
 ```
-python src/tools/lyft_to_coco.py \
-    --data_path data/Lyft_KITTI/Store/ \
-    --output_path data
+python src/tools/nuscenes_to_coco.py
 ```
 
 ## Inference
