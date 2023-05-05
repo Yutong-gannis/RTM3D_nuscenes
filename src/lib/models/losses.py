@@ -424,7 +424,8 @@ class Position_loss(nn.Module):
         B = B.view(b * c, 18, 1).float()
         # mask = mask.unsqueeze(2)
         pinv = torch.bmm(AT, A)
-        pinv = torch.inverse(pinv)  # b*c 3 3
+        #pinv = torch.inverse(pinv)  # b*c 3 3
+        pinv = torch.linalg.pinv(pinv)
         mask2 = torch.sum(kps_mask, dim=2)
         loss_mask = mask2 > 15
         pinv = torch.bmm(pinv, AT)
@@ -437,7 +438,7 @@ class Position_loss(nn.Module):
         dim_mask = dim<0
         dim = torch.clamp(dim, 0 , 10)
         dim_mask_score_mask = torch.sum(dim_mask, dim=2)
-        dim_mask_score_mask = 1 - (dim_mask_score_mask > 0)
+        dim_mask_score_mask = ~(dim_mask_score_mask > 0)
         dim_mask_score_mask = dim_mask_score_mask.float()
 
         box_pred = torch.cat((pinv, dim, rot_y), dim=2).detach()
@@ -537,3 +538,4 @@ def compute_rot_loss(output, target_bin, target_res, mask):
             valid_output2[:, 7], torch.cos(valid_target_res2[:, 1]))
         loss_res += loss_sin2 + loss_cos2
     return loss_bin1 + loss_bin2 + loss_res
+
